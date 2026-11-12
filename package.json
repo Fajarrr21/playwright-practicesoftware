@@ -1,0 +1,21 @@
+{
+  "name": "playwright-practicesoftware",
+  "version": "1.0.0",
+  "description": "Playwright + TypeScript test framework (UI, API, accessibility) for the Practice Software Testing Toolshop",
+  "private": true,
+  "scripts": {
+    "test": "playwright test",
+    "test:api": "playwright test --project=api",
+    "test:ui": "playwright test --project=chromium",
+    "test:a11y": "playwright test --project=a11y",
+    "report": "playwright show-report",
+    "typecheck": "tsc --noEmit"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@playwright/test": "^1.65.0",
+    "@types/node": "^26.6.6",
+    "typescript": "^7.0.2"
+  }
+}
