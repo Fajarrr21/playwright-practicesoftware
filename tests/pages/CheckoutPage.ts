@@ -37,9 +37,14 @@ export class CheckoutPage {
     await this.page.getByTestId('proceed-1').click();
     await this.page.getByTestId('proceed-2').click();
     // Registered address has no house number, which the billing step requires.
+    // The address lookup can wipe the field right after we type, so retry until it sticks.
     const house = this.page.getByTestId('house_number');
-    if (!(await house.inputValue())) await house.fill('10');
-    await this.page.getByTestId('proceed-3').click();
+    const proceed = this.page.getByTestId('proceed-3');
+    await expect(async () => {
+      if (!(await house.inputValue())) await house.fill('10');
+      await expect(proceed).toBeEnabled({ timeout: 2_000 });
+    }).toPass({ timeout: 15_000 });
+    await proceed.click();
 
     await this.page.getByTestId('payment-method').selectOption(method);
     for (const [field, value] of Object.entries(details)) await this.page.getByTestId(field).fill(value);
