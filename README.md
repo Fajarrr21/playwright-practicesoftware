@@ -54,5 +54,5 @@ tests/
 - The target is a public server other people use, so I keep it at 4 workers locally and 2 per shard in CI.
 - Retries only run in CI (2), with a trace on the first retry. Flaky tests show up as flaky in the report.
 - Video is off. On my laptop it slowed browser shutdown enough to cause timeouts, and the trace has a screencast anyway.
-- On GitHub's runners, Cloudflare sometimes shows a "Verify you are human" page when a test opens `/account`. The auth tests detect that page and skip themselves, so the report shows them as skipped instead of failed. Locally they run normally.
+- On GitHub's runners, Cloudflare sometimes shows a "Verify you are human" page when a test opens `/account`. The `page` fixture watches for that page with `addLocatorHandler`. If a test fails while it's on screen, the test is marked as skipped instead of failed. Locally they run normally.
 - Test users are never deleted. That needs an admin token, and the demo database resets itself.

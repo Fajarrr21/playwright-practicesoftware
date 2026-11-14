@@ -37,16 +37,17 @@ export class CheckoutPage {
     await this.page.getByTestId('proceed-1').click();
     await this.page.getByTestId('proceed-2').click();
     // Registered address has no house number, which the billing step requires.
-    // The address lookup can wipe the field right after we type, so retry until it sticks.
+    // The address lookup runs after we type: it can wipe the field, or re-render the form and
+    // swallow our click. Retry until the payment step actually shows up.
     const house = this.page.getByTestId('house_number');
-    const proceed = this.page.getByTestId('proceed-3');
+    const payment = this.page.getByTestId('payment-method');
     await expect(async () => {
-      if (!(await house.inputValue())) await house.fill('10');
-      await expect(proceed).toBeEnabled({ timeout: 2_000 });
-    }).toPass({ timeout: 15_000 });
-    await proceed.click();
+      if (!(await house.inputValue())) await house.pressSequentially('10');
+      await this.page.getByTestId('proceed-3').click({ timeout: 2_000 });
+      await expect(payment).toBeVisible({ timeout: 2_000 });
+    }).toPass({ timeout: 20_000 });
 
-    await this.page.getByTestId('payment-method').selectOption(method);
+    await payment.selectOption(method);
     for (const [field, value] of Object.entries(details)) await this.page.getByTestId(field).fill(value);
     await this.page.getByTestId('finish').click();
     await expect(this.paymentSuccess).toHaveText(/Payment was successful/);

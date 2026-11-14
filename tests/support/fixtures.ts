@@ -20,6 +20,22 @@ type Fixtures = {
 };
 
 export const test = base.extend<Fixtures>({
+  // Cloudflare sometimes shows GitHub's runners a "Verify you are human" page, at any point in a test.
+  // A test can't get past it, so skip instead of reporting a false failure.
+  page: async ({ page }, use, testInfo) => {
+    let blocked = false;
+    await page.addLocatorHandler(
+      page.getByText('Performing security verification'),
+      async () => { blocked = true; },
+      { noWaitAfter: true },
+    );
+    await use(page);
+    if (blocked && testInfo.status !== testInfo.expectedStatus) {
+      testInfo.status = 'skipped';
+      testInfo.annotations.push({ type: 'skip', description: 'Blocked by Cloudflare bot check' });
+    }
+  },
+
   api: async ({}, use) => {
     const ctx = await request.newContext({ baseURL: API_URL });
     await use(ctx);

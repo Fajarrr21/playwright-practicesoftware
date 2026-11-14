@@ -33,6 +33,7 @@ test.describe('Cart & checkout', () => {
 
   // `authedPage` is requested only so the shared `page` starts logged in.
   test('logged-in user places an order and the invoice exists in the API', async ({ api, user, authedPage: _, product, checkout }) => {
+    test.slow(); // 4 checkout steps on a shared public server
     const p = await inStockProduct(api);
     await product.goto(p.id);
     await product.addToCart(2);
